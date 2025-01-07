@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../api/auth'; 
-import { signInWithGoogle } from '../firebase/FirebaseConfig';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase/FirebaseConfig';
+import { login, googleLogin } from '../api/auth'; // Import the Google Login API
 import {
   Box,
   TextField,
@@ -12,10 +13,9 @@ import {
   Grid,
   Divider,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Google } from '@mui/icons-material';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
-import { Google } from '@mui/icons-material';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -33,24 +33,46 @@ const Login = () => {
     event.preventDefault();
     setError('');
     try {
-      const token = await login(email, password); // Call the login API
-      localStorage.setItem('authToken', token); // Store the token
-      localStorage.setItem('email', email); // Store the email
+      // Validate email and password with Firebase
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  
+      // Retrieve the ID token from Firebase
+      const idToken = await userCredential.user.getIdToken();
+  
+      // Call the backend login API with the ID token
+      const response = await login(idToken);
+  
+      // Store the token and email in localStorage
+      localStorage.setItem('authToken', response.token); // Use the backend token
+      localStorage.setItem('email', email); // Store the email for reference
+  
       navigate('/home'); // Redirect to home page
-    } catch (err) {
-      setError(err); // Set error message from API
+    } catch (error) {
+      console.error('Error during login:', error);
+      setError('Invalid email or password. Please try again.');
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      const { token, email } = await signInWithGoogle();
-      localStorage.setItem('authToken', token); // Store the backend token
-      localStorage.setItem('email', email); // Store the email
+      // Perform Google Sign-In on the client side
+      const result = await signInWithPopup(auth, googleProvider);
+  
+      // Get the Google ID token from the result
+      const idToken = await result.user.getIdToken();
+  
+      // Call the backend Google Login API with the ID token
+      const response = await googleLogin(idToken); // Pass the ID token to the backend
+      const { token, email } = response; // Extract token and email from the backend response
+  
+      // Store the token and email in localStorage
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('email', email);
+  
       navigate('/home'); // Redirect to home page
     } catch (error) {
       console.error('Error during Google Login:', error);
-      setError(error); // Display error message
+      setError('Google Login failed. Please try again.');
     }
   };
 
@@ -179,9 +201,9 @@ const Login = () => {
                   sx={{ color: 'text.secondary', mt: 2, cursor: 'pointer' }}
                 >
                   Forgot your password?{' '}
-                <a href="/reset-password" style={{ color: '#2196F3' }}>
-                  Reset it here
-                </a>
+                  <a href="/reset-password" style={{ color: '#2196F3' }}>
+                    Reset it here
+                  </a>
                 </Typography>
               </Grid>
               <Grid item xs={12}>

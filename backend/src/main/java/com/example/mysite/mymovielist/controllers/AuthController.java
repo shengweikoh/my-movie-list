@@ -1,10 +1,11 @@
 package com.example.mysite.mymovielist.controllers;
 
-import com.example.mysite.mymovielist.DTO.LoginRequest;
+import com.example.mysite.mymovielist.DTO.GoogleLoginRequest;
 import com.example.mysite.mymovielist.DTO.SignupRequest;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
+import com.example.mysite.mymovielist.services.AuthService;
+
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,31 +13,40 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        try {
+            String idToken = body.get("idToken");
+            Map<String, String> response = authService.login(idToken);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Error logging in: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
         try {
-            // Create a new user in Firebase
-            UserRecord.CreateRequest createRequest = new UserRecord.CreateRequest()
-                    .setEmail(request.getEmail())
-                    .setPassword(request.getPassword())
-                    .setDisplayName(request.getDisplayName());
-            UserRecord userRecord = FirebaseAuth.getInstance().createUser(createRequest);
-
-            // Respond with the created user's UID
-            return ResponseEntity.ok("User created successfully: " + userRecord.getUid());
-        } catch (FirebaseAuthException e) {
+            authService.signup(request);
+            return ResponseEntity.ok("User created successfully and saved to Firestore.");
+        } catch (Exception e) {
             return ResponseEntity.status(400).body("Error creating user: " + e.getMessage());
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
         try {
-            // Generate a custom Firebase token for the user
-            String token = FirebaseAuth.getInstance().createCustomToken(request.getEmail());
-            return ResponseEntity.ok(token);
-        } catch (FirebaseAuthException e) {
-            return ResponseEntity.status(400).body("Error logging in: " + e.getMessage());
+            Map<String, String> response = authService.googleLogin(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Google login failed: " + e.getMessage());
         }
     }
 }

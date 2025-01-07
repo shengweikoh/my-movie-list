@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signup } from '../api/auth';
-import { signInWithGoogle } from '../firebase/FirebaseConfig';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase/FirebaseConfig';
+import { signup, googleLogin } from '../api/auth'; // Import the Google Login API
 import {
   Box,
   TextField,
@@ -46,19 +47,28 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleLogin = async () => {
     try {
-      // Perform Google Sign-In
-      const { token, email } = await signInWithGoogle(); // Fetch Google ID token
-      localStorage.setItem('authToken', token); // Save token if returned
-      localStorage.setItem('email', email); // Save email if returned
+      // Perform Google Sign-In on the client side
+      const result = await signInWithPopup(auth, googleProvider);
+  
+      // Get the Google ID token from the result
+      const idToken = await result.user.getIdToken();
+  
+      // Call the backend Google Login API with the ID token
+      const response = await googleLogin(idToken); // Pass the ID token to the backend
+      const { token, email } = response; // Extract token and email from the backend response
+  
+      // Store the token and email in localStorage
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('email', email);
+  
       navigate('/home'); // Redirect to home page
     } catch (error) {
-      console.error('Error during Google Sign-Up:', error);
-      setError('Google Sign-Up failed. Please try again.');
+      console.error('Error during Google Login:', error);
+      setError('Google Login failed. Please try again.');
     }
   };
-
 
   return (
     <Box
@@ -233,7 +243,7 @@ const SignUp = () => {
                   fullWidth
                   variant="outlined"
                   size="large"
-                  onClick={handleGoogleSignUp} // Trigger Google login
+                  onClick={handleGoogleLogin} // Trigger Google login
                   startIcon={<Google />} // Add Google icon
                   sx={{
                     color: '#616161',

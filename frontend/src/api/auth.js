@@ -26,13 +26,12 @@ export const signup = async (email, password, displayName) => {
 };
 
 // Login API
-export const login = async (email, password) => {
+export const login = async (idToken) => {
   try {
     const response = await axiosInstance.post('/login', {
-      email,
-      password,
+      idToken, // Send the Firebase ID token to the backend
     });
-    return response.data; // Returns the token
+    return response.data; // Returns the custom backend token
   } catch (error) {
     throw error.response?.data || 'Login failed';
   }
@@ -42,9 +41,9 @@ export const login = async (email, password) => {
 export const googleLogin = async (idToken) => {
   try {
     const response = await axiosInstance.post('/google-login', {
-      idToken, // Send the ID token in the request body
+      idToken, // Send the ID token as part of the request body
     });
-    return response.data; // Backend response
+    return response.data; // Return the response from the backend
   } catch (error) {
     throw error.response?.data || 'Google Login failed';
   }
