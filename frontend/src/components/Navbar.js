@@ -13,10 +13,11 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Switch from '@mui/material/Switch';
+import logoLight from '../assets/logo-light.png'; // Light logo
+import logoDark from '../assets/logo-dark.png'; // Dark logo
 
 const pages = ['Products', 'Pricing', 'Blog'];
 
@@ -30,7 +31,7 @@ function Navbar({ mode, toggleTheme }) {
     // Retrieve email from localStorage
     const storedEmail = localStorage.getItem('email');
     setEmail(storedEmail);
-  }, []); // Only run on initial render
+  }, []);
 
   const settings = email
     ? [`Logged in as: ${email}`, 'Profile', 'Account', 'Dashboard', 'Logout']
@@ -80,12 +81,23 @@ function Navbar({ mode, toggleTheme }) {
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/* Logo */}
+          <Box
+            component="img"
+            src={mode === 'light' ? logoLight : logoDark}
+            alt="Logo"
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              height: 40,
+              mr: 2,
+            }}
+          />
+
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="#"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -96,9 +108,9 @@ function Navbar({ mode, toggleTheme }) {
               textDecoration: 'none',
             }}
           >
-            LOGO
           </Typography>
 
+          {/* Navigation Menu for Mobile */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -128,35 +140,29 @@ function Navbar({ mode, toggleTheme }) {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                  <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+
+          {/* Logo for Mobile */}
+          <Box
+            component="img"
+            src={mode === 'light' ? logoLight : logoDark}
+            alt="Logo"
             sx={{
-              mr: 2,
               display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              height: 40,
+              mr: 2,
             }}
-          >
-            LOGO
-          </Typography>
+          />
+
+          {/* Desktop Navigation Menu */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
                 sx={{
                   my: 2,
                   color: mode === 'light' ? '#000' : 'white',
@@ -178,10 +184,11 @@ function Navbar({ mode, toggleTheme }) {
             <Switch checked={mode === 'dark'} onChange={toggleTheme} />
           </Box>
 
-          <Box sx={{ flexGrow: 0}}>
+          {/* User Menu */}
+          <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -205,7 +212,7 @@ function Navbar({ mode, toggleTheme }) {
                   key={setting}
                   onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}
                 >
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                  <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
