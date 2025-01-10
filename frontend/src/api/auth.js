@@ -39,6 +39,7 @@ export const login = async (idToken) => {
 
 // Google Login API
 export const googleLogin = async (idToken) => {
+  console.log(API_BASE_URL);
   try {
     const response = await axiosInstance.post('/google-login', {
       idToken, // Send the ID token as part of the request body
