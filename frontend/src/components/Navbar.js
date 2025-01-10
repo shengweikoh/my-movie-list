@@ -53,6 +53,11 @@ function Navbar({ mode, toggleTheme }) {
     setAnchorElUser(null);
   };
 
+  const handleGoToHome = () => {
+    navigate('/home');
+  };
+
+
   const handleLogout = async () => {
     try {
       // Log out from Firebase
@@ -90,7 +95,12 @@ function Navbar({ mode, toggleTheme }) {
               display: { xs: 'none', md: 'flex' },
               height: 40,
               mr: 2,
+              cursor: 'pointer', // Add pointer cursor for hover effect
+              '&:hover': {
+                opacity: 0.8, // Optional: Slightly change opacity on hover for effect
+              },
             }}
+            onClick={handleGoToHome}
           />
 
           <Typography
@@ -155,7 +165,12 @@ function Navbar({ mode, toggleTheme }) {
               display: { xs: 'flex', md: 'none' },
               height: 40,
               mr: 2,
+              cursor: 'pointer', // Add pointer cursor for hover effect
+              '&:hover': {
+                opacity: 0.8, // Optional: Slightly change opacity on hover for effect
+              },
             }}
+            onClick={handleGoToHome}
           />
 
           {/* Desktop Navigation Menu */}

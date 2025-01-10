@@ -36,7 +36,7 @@ const App = () => {
 
   const AppContent = () => {
     const location = useLocation();
-    const showNavbar = !['/login', '/signup'].includes(location.pathname); // Hide Navbar for specific routes
+    const showNavbar = !['/', '/login', '/signup'].includes(location.pathname); // Hide Navbar for specific routes
 
     return (
       <>
