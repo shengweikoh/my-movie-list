@@ -19,9 +19,13 @@ jobs:
         with:
           node-version: 18
 
-      # Step 3: Set up environment variables
+      # Step 3a: Set up environment variables in Github Actions environment
       - name: Set up environment variables
         run: echo "REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }}" >> $GITHUB_ENV
+
+      # Step 3b: Decode and create .env file
+      - name: Decode and Create .env File
+        run: echo "${{ secrets.FIREBASE_ENV }}" | base64 -d > ./frontend/.env
 
       # Step 4: Install dependencies for the React app
       - name: Install dependencies
