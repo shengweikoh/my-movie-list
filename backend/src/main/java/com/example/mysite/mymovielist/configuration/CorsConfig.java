@@ -14,7 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Allow all endpoints
-                        .allowedOrigins("http://localhost:3000") // Allow React frontend
+                        .allowedOrigins(
+                                "http://localhost:3000", // React frontend locally
+                                "https://my-movie-list-d45fa.web.app" // React frontend deployed
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow specific methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow cookies if needed
