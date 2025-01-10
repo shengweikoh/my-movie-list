@@ -39,8 +39,7 @@ const SignUp = () => {
     event.preventDefault();
     setError('');
     try {
-      const response = await signup(email, password, username); // Call the signup API
-      alert('Signup successful!');
+      await signup(email, password, username); // Call the signup API
       navigate('/login'); // Redirect to login page
     } catch (err) {
       setError(err); // Set error message from API
