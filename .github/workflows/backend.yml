@@ -30,10 +30,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Step 4: Create serviceAccountKey.json
-      - name: Create serviceAccountKey.json
-        run: echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" | tr '\r' '\n' > backend/src/main/resources/serviceAccountKey.json
-
+      # Step 4: Decode and Create serviceAccountKey.json
+      - name: Decode serviceAccountKey.json
+        run: |
+          echo "${{ secrets.ENCODED_SERVICE_ACCOUNT_KEY }}" | base64 -d > backend/src/main/resources/serviceAccountKey.json
+    
       # Step 5: Build the application
       - name: Build with Maven
         working-directory: ./backend
