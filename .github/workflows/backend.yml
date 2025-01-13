@@ -67,5 +67,11 @@ jobs:
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets "Key=instanceIds,Values=${{ secrets.INSTANCE_ID }}" \
-            --parameters 'commands=["docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest","docker stop backend || true","docker rm backend || true","docker run -d --name backend -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/backend:latest"]' \
+            --parameters 'commands=[
+              "docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest",
+              "docker stop backend || true",
+              "docker rm backend || true",
+              "docker image prune -f",
+              "docker run -d --name backend -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/backend:latest"
+            ]' \
             --region ${{ secrets.AWS_REGION }}
